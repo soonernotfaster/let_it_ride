@@ -54,6 +54,7 @@ CARDS = [
     "KS",
 ]
 from hypothesis import given, strategies as st
+from collections import Counter
 
 HIGH_CARD_RANKS = {"T", "J", "Q", "K", "A"}
 RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
@@ -77,5 +78,39 @@ def test_no_win(cards: list[str]):
     assert "no_payout" == score(dealer, player)
 
 
+def test_pair_across_dealer_and_player():
+    player = ["2H", "3S", "JD"]
+    dealer = ["4C", "JH"]
+
+    assert "1-pair" == score(dealer, player)
+
+
+def test_pair_in_player_hand():
+    player = ["2H", "JH", "JD"]
+    dealer = [
+        "4C",
+        "3S",
+    ]
+
+    assert "1-pair" == score(dealer, player)
+
+
+def test_pair_in_dealer_hand():
+    player = ["2H", "3S", "4C"]
+    dealer = ["JD", "JH"]
+
+    assert "1-pair" == score(dealer, player)
+
+
+RANK_INDEX = 0
+
+
 def score(dealer: list[str], player: list[str]) -> str:
+    full_hand = dealer + player
+    ranks = [c[RANK_INDEX] for c in full_hand if c[RANK_INDEX] in HIGH_CARD_RANKS]
+    count_by_ranks = Counter(ranks)
+    rank_frequency_dist = Counter(count_by_ranks.values())
+
+    if 2 in rank_frequency_dist and rank_frequency_dist[2] == 1:
+        return "1-pair"
     return "no_payout"
