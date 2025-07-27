@@ -67,6 +67,7 @@ class GameResult(StrEnum):
     Pair = "1-pair"
     TwoPair = "2-pair"
     ThreeOfAKind = "3-of-a-kind"
+    FourOfAKind = "4-of-a-kind"
 
 
 @st.composite
@@ -145,6 +146,22 @@ def test_three_of_a_kind_dealer_and_player():
     assert GameResult.ThreeOfAKind == score(dealer, player)
 
 
+def test_four_of_a_kind_player_has_three_of_a_kind():
+    player = ["JD", "JC", "JS"]
+
+    dealer = ["JH", "4C"]
+
+    assert GameResult.FourOfAKind == score(dealer, player)
+
+
+def test_four_of_a_kind_player_and_dealer_have_pairs():
+    player = ["JD", "JC", "4C"]
+
+    dealer = ["JH", "JS"]
+
+    assert GameResult.FourOfAKind == score(dealer, player)
+
+
 RANK_INDEX = 0
 
 
@@ -161,5 +178,7 @@ def score(dealer: list[str], player: list[str]) -> str:
             return GameResult.Pair
     if 3 in rank_frequency_dist:
         return GameResult.ThreeOfAKind
+    if 4 in rank_frequency_dist:
+        return GameResult.FourOfAKind
 
     return GameResult.NoPayout
