@@ -70,12 +70,12 @@ def low_card_hands(draw) -> list[str]:
 
 
 @given(low_card_hands())
-def test_tens_or_higher(cards: list[str]):
+def test_no_win(cards: list[str]):
     player = cards[:3]
     dealer = cards[3:]
 
-    assert "no_score" == score(dealer, player)
+    assert "no_payout" == score(dealer, player)
 
 
 def score(dealer: list[str], player: list[str]) -> str:
-    return "no_score"
+    return "no_payout"
