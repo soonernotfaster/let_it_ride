@@ -55,10 +55,18 @@ CARDS = [
 ]
 from hypothesis import given, strategies as st
 from collections import Counter
+from enum import StrEnum
 
 HIGH_CARD_RANKS = {"T", "J", "Q", "K", "A"}
 RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
 SUITS = ["C", "D", "H", "S"]
+
+
+class GameResult(StrEnum):
+    NoPayout = "no_payout"
+    Pair = "1-pair"
+    TwoPair = "2-pair"
+    ThreeOfAKind = "3-of-a-kind"
 
 
 @st.composite
@@ -75,14 +83,14 @@ def test_no_win(cards: list[str]):
     player = cards[:3]
     dealer = cards[3:]
 
-    assert "no_payout" == score(dealer, player)
+    assert GameResult.NoPayout == score(dealer, player)
 
 
 def test_pair_across_dealer_and_player():
     player = ["2H", "3S", "JD"]
     dealer = ["4C", "JH"]
 
-    assert "1-pair" == score(dealer, player)
+    assert GameResult.Pair == score(dealer, player)
 
 
 def test_pair_in_player_hand():
@@ -92,49 +100,49 @@ def test_pair_in_player_hand():
         "3S",
     ]
 
-    assert "1-pair" == score(dealer, player)
+    assert GameResult.Pair == score(dealer, player)
 
 
 def test_pair_in_dealer_hand():
     player = ["2H", "3S", "4C"]
     dealer = ["JD", "JH"]
 
-    assert "1-pair" == score(dealer, player)
+    assert GameResult.Pair == score(dealer, player)
 
 
 def test_two_pair_across_dealer_and_player_one_each_rank():
     player = ["JH", "TD", "4C"]
     dealer = ["JD", "TH"]
 
-    assert "2-pair" == score(dealer, player)
+    assert GameResult.TwoPair == score(dealer, player)
 
 
 def test_two_pair_across_dealer_and_player_each_has_pair():
     player = ["TH", "TD", "4C"]
     dealer = ["JD", "JH"]
 
-    assert "2-pair" == score(dealer, player)
+    assert GameResult.TwoPair == score(dealer, player)
 
 
 def test_two_pair_across_dealer_and_player_has_pair():
     player = ["TH", "TD", "JH"]
     dealer = ["JD", "4C"]
 
-    assert "2-pair" == score(dealer, player)
+    assert GameResult.TwoPair == score(dealer, player)
 
 
 def test_three_of_a_kind_player_hand_only():
     player = ["JD", "JC", "JH"]
     dealer = ["2D", "4C"]
 
-    assert "3-of-a-kind" == score(dealer, player)
+    assert GameResult.ThreeOfAKind == score(dealer, player)
 
 
 def test_three_of_a_kind_dealer_and_player():
     player = ["JD", "JC", "4H"]
     dealer = ["JS", "4C"]
 
-    assert "3-of-a-kind" == score(dealer, player)
+    assert GameResult.ThreeOfAKind == score(dealer, player)
 
 
 RANK_INDEX = 0
@@ -148,10 +156,10 @@ def score(dealer: list[str], player: list[str]) -> str:
 
     if 2 in rank_frequency_dist:
         if rank_frequency_dist[2] == 2:
-            return "2-pair"
+            return GameResult.TwoPair
         if rank_frequency_dist[2] == 1:
-            return "1-pair"
+            return GameResult.Pair
     if 3 in rank_frequency_dist:
-        return "3-of-a-kind"
+        return GameResult.ThreeOfAKind
 
-    return "no_payout"
+    return GameResult.NoPayout
