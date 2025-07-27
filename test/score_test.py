@@ -102,6 +102,27 @@ def test_pair_in_dealer_hand():
     assert "1-pair" == score(dealer, player)
 
 
+def test_two_pair_across_dealer_and_player_one_each_rank():
+    player = ["JH", "TD", "4C"]
+    dealer = ["JD", "TH"]
+
+    assert "2-pair" == score(dealer, player)
+
+
+def test_two_pair_across_dealer_and_player_each_has_pair():
+    player = ["TH", "TD", "4C"]
+    dealer = ["JD", "JH"]
+
+    assert "2-pair" == score(dealer, player)
+
+
+def test_two_pair_across_dealer_and_player_has_pair():
+    player = ["TH", "TD", "JH"]
+    dealer = ["JD", "4C"]
+
+    assert "2-pair" == score(dealer, player)
+
+
 RANK_INDEX = 0
 
 
@@ -111,6 +132,10 @@ def score(dealer: list[str], player: list[str]) -> str:
     count_by_ranks = Counter(ranks)
     rank_frequency_dist = Counter(count_by_ranks.values())
 
-    if 2 in rank_frequency_dist and rank_frequency_dist[2] == 1:
-        return "1-pair"
+    if 2 in rank_frequency_dist:
+        if rank_frequency_dist[2] == 2:
+            return "2-pair"
+        if rank_frequency_dist[2] == 1:
+            return "1-pair"
+
     return "no_payout"
