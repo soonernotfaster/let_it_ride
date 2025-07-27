@@ -123,6 +123,20 @@ def test_two_pair_across_dealer_and_player_has_pair():
     assert "2-pair" == score(dealer, player)
 
 
+def test_three_of_a_kind_player_hand_only():
+    player = ["JD", "JC", "JH"]
+    dealer = ["2D", "4C"]
+
+    assert "3-of-a-kind" == score(dealer, player)
+
+
+def test_three_of_a_kind_dealer_and_player():
+    player = ["JD", "JC", "4H"]
+    dealer = ["JS", "4C"]
+
+    assert "3-of-a-kind" == score(dealer, player)
+
+
 RANK_INDEX = 0
 
 
@@ -137,5 +151,7 @@ def score(dealer: list[str], player: list[str]) -> str:
             return "2-pair"
         if rank_frequency_dist[2] == 1:
             return "1-pair"
+    if 3 in rank_frequency_dist:
+        return "3-of-a-kind"
 
     return "no_payout"
