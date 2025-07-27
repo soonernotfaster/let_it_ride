@@ -9,6 +9,7 @@ packages = [{include = "src"}]
 
 [dependency-groups]
 dev = [
+    "hypothesis>=6.136.4",
     "pytest>=8.4.1",
 ]
 
