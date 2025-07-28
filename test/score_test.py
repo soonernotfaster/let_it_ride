@@ -70,6 +70,7 @@ class GameResult(StrEnum):
     FourOfAKind = "4-of-a-kind"
     FullHouse = "full-house"
     Straight = "straight"
+    Flush = "flush"
 
 
 @st.composite
@@ -186,6 +187,14 @@ def test_straight():
     assert GameResult.Straight == score(dealer, player)
 
 
+def test_flush():
+    player = ["6C", "TC", "AC"]
+
+    dealer = ["JC", "2C"]
+
+    assert GameResult.Flush == score(dealer, player)
+
+
 RANK_INDEX = 0
 
 RANK_TO_VALUE = {
@@ -215,6 +224,19 @@ def _is_straight(hand: list[str]) -> bool:
     return True
 
 
+def _is_flush(hand: list[str]) -> bool:
+    suits = [c[1] for c in hand]
+    print(suits)
+    suit_frequencies = Counter(suits)
+
+    suit_frequency_dist = Counter(suit_frequencies.values())
+    print(suit_frequency_dist)
+
+    if 5 in suit_frequency_dist:
+        return True
+    return False
+
+
 def score(dealer: list[str], player: list[str]) -> str:
     def by_rank(card: str) -> None:
         return card[0]
@@ -224,6 +246,8 @@ def score(dealer: list[str], player: list[str]) -> str:
     count_by_ranks = Counter(ranks)
     rank_frequency_dist = Counter(count_by_ranks.values())
 
+    if _is_flush(full_hand):
+        return GameResult.Flush
     if _is_straight(full_hand):
         return GameResult.Straight
     if 3 in rank_frequency_dist and 2 in rank_frequency_dist:
