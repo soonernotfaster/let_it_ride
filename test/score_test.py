@@ -72,6 +72,7 @@ class GameResult(StrEnum):
     Straight = "straight"
     Flush = "flush"
     StraightFlush = "straight-flush"
+    RoyalFlush = "royal-flush"
 
 
 @st.composite
@@ -205,6 +206,14 @@ def test_straight_flush():
     assert GameResult.StraightFlush == score(dealer, player)
 
 
+def test_royal_flush():
+    player = ["JC", "AC", "KC"]
+
+    dealer = ["TC", "QC"]
+
+    assert GameResult.RoyalFlush == score(dealer, player)
+
+
 RANK_INDEX = 0
 
 RANK_TO_VALUE = {
@@ -256,6 +265,8 @@ def score(dealer: list[str], player: list[str]) -> str:
     count_by_ranks = Counter(ranks)
     rank_frequency_dist = Counter(count_by_ranks.values())
 
+    if _is_flush(full_hand) and all([c[0] in HIGH_CARD_RANKS for c in full_hand]):
+        return GameResult.RoyalFlush
     if _is_flush(full_hand) and _is_straight(full_hand):
         return GameResult.StraightFlush
     if _is_flush(full_hand):
