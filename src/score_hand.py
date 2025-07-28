@@ -104,11 +104,8 @@ def is_straight(hand: list[str]) -> bool:
 
 def is_flush(hand: list[str]) -> bool:
     suits = [c[1] for c in hand]
-    print(suits)
     suit_frequencies = Counter(suits)
-
     suit_frequency_dist = Counter(suit_frequencies.values())
-    print(suit_frequency_dist)
 
     if 5 in suit_frequency_dist:
         return True
