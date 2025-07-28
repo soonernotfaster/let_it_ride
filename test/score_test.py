@@ -260,19 +260,21 @@ def score(dealer: list[str], player: list[str]) -> str:
     def by_rank(card: str) -> None:
         return card[0]
 
-    full_hand = sorted(dealer + player, key=by_rank)
-    ranks = [c[RANK_INDEX] for c in full_hand if c[RANK_INDEX] in HIGH_CARD_RANKS]
+    hand = sorted(dealer + player, key=by_rank)
+
+    if _is_flush(hand) and all([c[0] in HIGH_CARD_RANKS for c in hand]):
+        return GameResult.RoyalFlush
+    if _is_flush(hand) and _is_straight(hand):
+        return GameResult.StraightFlush
+    if _is_flush(hand):
+        return GameResult.Flush
+    if _is_straight(hand):
+        return GameResult.Straight
+
+    ranks = [c[RANK_INDEX] for c in hand if c[RANK_INDEX] in HIGH_CARD_RANKS]
     count_by_ranks = Counter(ranks)
     rank_frequency_dist = Counter(count_by_ranks.values())
 
-    if _is_flush(full_hand) and all([c[0] in HIGH_CARD_RANKS for c in full_hand]):
-        return GameResult.RoyalFlush
-    if _is_flush(full_hand) and _is_straight(full_hand):
-        return GameResult.StraightFlush
-    if _is_flush(full_hand):
-        return GameResult.Flush
-    if _is_straight(full_hand):
-        return GameResult.Straight
     if 3 in rank_frequency_dist and 2 in rank_frequency_dist:
         return GameResult.FullHouse
     if 2 in rank_frequency_dist:
