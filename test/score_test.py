@@ -271,6 +271,15 @@ def score(dealer: list[str], player: list[str]) -> str:
     if _is_straight(hand):
         return GameResult.Straight
 
+    pair_hand_result = check_pair_hands(hand)
+
+    if pair_hand_result:
+        return pair_hand_result
+
+    return GameResult.NoPayout
+
+
+def check_pair_hands(hand: list[str]) -> GameResult:
     ranks = [c[RANK_INDEX] for c in hand if c[RANK_INDEX] in HIGH_CARD_RANKS]
     count_by_ranks = Counter(ranks)
     rank_frequency_dist = Counter(count_by_ranks.values())
@@ -287,4 +296,4 @@ def score(dealer: list[str], player: list[str]) -> str:
     if 4 in rank_frequency_dist:
         return GameResult.FourOfAKind
 
-    return GameResult.NoPayout
+    return None
