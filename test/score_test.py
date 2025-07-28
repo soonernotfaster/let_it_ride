@@ -63,11 +63,12 @@ SUITS = ["C", "D", "H", "S"]
 
 
 class GameResult(StrEnum):
-    NoPayout = "no_payout"
+    NoPayout = "no-payout"
     Pair = "1-pair"
     TwoPair = "2-pair"
     ThreeOfAKind = "3-of-a-kind"
     FourOfAKind = "4-of-a-kind"
+    FullHouse = "full-house"
 
 
 @st.composite
@@ -159,6 +160,22 @@ def test_four_of_a_kind_when_player_and_dealer_have_pairs():
     assert GameResult.FourOfAKind == score(dealer, player)
 
 
+def test_full_house():
+    player = ["AD", "AC", "AS"]
+
+    dealer = ["TH", "TS"]
+
+    assert GameResult.FullHouse == score(dealer, player)
+
+
+def test_full_house():
+    player = ["AD", "AC", "TH"]
+
+    dealer = ["AS", "TS"]
+
+    assert GameResult.FullHouse == score(dealer, player)
+
+
 RANK_INDEX = 0
 
 
@@ -168,6 +185,8 @@ def score(dealer: list[str], player: list[str]) -> str:
     count_by_ranks = Counter(ranks)
     rank_frequency_dist = Counter(count_by_ranks.values())
 
+    if 3 in rank_frequency_dist and 2 in rank_frequency_dist:
+        return GameResult.FullHouse
     if 2 in rank_frequency_dist:
         if rank_frequency_dist[2] == 2:
             return GameResult.TwoPair
