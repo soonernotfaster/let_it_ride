@@ -53,7 +53,7 @@ CARDS = [
     "QS",
     "KS",
 ]
-from hypothesis import given, strategies as st
+from hypothesis import given, assume, strategies as st
 from collections import Counter
 from enum import StrEnum
 
@@ -69,6 +69,7 @@ class GameResult(StrEnum):
     ThreeOfAKind = "3-of-a-kind"
     FourOfAKind = "4-of-a-kind"
     FullHouse = "full-house"
+    Straight = "straight"
 
 
 @st.composite
@@ -82,6 +83,7 @@ def low_card_hands(draw) -> list[str]:
 
 @given(low_card_hands())
 def test_no_win(cards: list[str]):
+    assume(not _is_straight(cards))
     player = cards[:3]
     dealer = cards[3:]
 
@@ -176,15 +178,54 @@ def test_full_house():
     assert GameResult.FullHouse == score(dealer, player)
 
 
+def test_straight():
+    player = ["2C", "3D", "4H"]
+
+    dealer = ["5S", "6D"]
+
+    assert GameResult.Straight == score(dealer, player)
+
+
 RANK_INDEX = 0
+
+RANK_TO_VALUE = {
+    "2": 0,
+    "3": 1,
+    "4": 2,
+    "5": 3,
+    "6": 4,
+    "7": 5,
+    "8": 6,
+    "9": 7,
+    "T": 8,
+    "J": 9,
+    "Q": 10,
+    "K": 11,
+    "A": 12,
+}
+
+
+def _is_straight(hand: list[str]) -> bool:
+    ranks = sorted([RANK_TO_VALUE[c[0]] for c in hand])
+
+    for i in range(4):
+        if ranks[i] + 1 != ranks[i + 1]:
+            return False
+
+    return True
 
 
 def score(dealer: list[str], player: list[str]) -> str:
-    full_hand = dealer + player
+    def by_rank(card: str) -> None:
+        return card[0]
+
+    full_hand = sorted(dealer + player, key=by_rank)
     ranks = [c[RANK_INDEX] for c in full_hand if c[RANK_INDEX] in HIGH_CARD_RANKS]
     count_by_ranks = Counter(ranks)
     rank_frequency_dist = Counter(count_by_ranks.values())
 
+    if _is_straight(full_hand):
+        return GameResult.Straight
     if 3 in rank_frequency_dist and 2 in rank_frequency_dist:
         return GameResult.FullHouse
     if 2 in rank_frequency_dist:
