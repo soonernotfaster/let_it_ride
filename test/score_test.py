@@ -257,10 +257,7 @@ def _is_flush(hand: list[str]) -> bool:
 
 
 def score(dealer: list[str], player: list[str]) -> str:
-    def by_rank(card: str) -> None:
-        return card[0]
-
-    hand = sorted(dealer + player, key=by_rank)
+    hand = dealer + player
 
     made_hand_result = check_made_hands(hand)
 
