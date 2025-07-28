@@ -259,12 +259,12 @@ def _is_flush(hand: list[str]) -> bool:
 def score(dealer: list[str], player: list[str]) -> str:
     hand = dealer + player
 
-    made_hand_result = check_made_hands(hand)
+    made_hand_result = _check_made_hands(hand)
 
     if made_hand_result:
         return made_hand_result
 
-    pair_hand_result = check_pair_hands(hand)
+    pair_hand_result = _check_pair_hands(hand)
 
     if pair_hand_result:
         return pair_hand_result
@@ -272,7 +272,7 @@ def score(dealer: list[str], player: list[str]) -> str:
     return GameResult.NoPayout
 
 
-def check_made_hands(hand: list[str]) -> GameResult:
+def _check_made_hands(hand: list[str]) -> GameResult:
     if _is_flush(hand) and all([c[0] in HIGH_CARD_RANKS for c in hand]):
         return GameResult.RoyalFlush
     if _is_flush(hand) and _is_straight(hand):
@@ -285,7 +285,7 @@ def check_made_hands(hand: list[str]) -> GameResult:
     return None
 
 
-def check_pair_hands(hand: list[str]) -> GameResult:
+def _check_pair_hands(hand: list[str]) -> GameResult:
     ranks = [c[RANK_INDEX] for c in hand if c[RANK_INDEX] in HIGH_CARD_RANKS]
     count_by_ranks = Counter(ranks)
     rank_frequency_dist = Counter(count_by_ranks.values())
