@@ -85,6 +85,7 @@ def low_card_hands(draw) -> list[str]:
 @given(low_card_hands())
 def test_no_win(cards: list[str]):
     assume(not _is_straight(cards))
+    assume(not _is_flush(cards))
     player = cards[:3]
     dealer = cards[3:]
 
