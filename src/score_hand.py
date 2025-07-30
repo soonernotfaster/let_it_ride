@@ -115,17 +115,7 @@ def is_flush(hand: list[str]) -> bool:
 def score(dealer: list[str], player: list[str]) -> str:
     hand = dealer + player
 
-    made_hand_result = _check_made_hands(hand)
-
-    if made_hand_result:
-        return made_hand_result
-
-    pair_hand_result = _check_pair_hands(hand)
-
-    if pair_hand_result:
-        return pair_hand_result
-
-    return GameResult.NoPayout
+    return _check_made_hands(hand) or _check_pair_hands(hand) or GameResult.NoPayout
 
 
 def _check_made_hands(hand: list[str]) -> GameResult:
