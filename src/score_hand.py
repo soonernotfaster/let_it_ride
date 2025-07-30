@@ -1,5 +1,5 @@
 from collections import Counter
-from enum import StrEnum
+from enum import StrEnum, Enum
 
 HIGH_CARD_RANKS = {"T", "J", "Q", "K", "A"}
 RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"]
@@ -135,21 +135,34 @@ def _all_high_cards(hand: list[str]) -> bool:
     return all([c[0] in HIGH_CARD_RANKS for c in hand])
 
 
-def _check_pair_hands(hand: list[str]) -> GameResult:
+def build_rank_frequency_dist(hand: list[str]) -> dict[int, int]:
     ranks = [c[RANK_INDEX] for c in hand if c[RANK_INDEX] in HIGH_CARD_RANKS]
     count_by_ranks = Counter(ranks)
-    rank_frequency_dist = Counter(count_by_ranks.values())
+    return Counter(count_by_ranks.values())
 
-    if 3 in rank_frequency_dist and 2 in rank_frequency_dist:
+
+class PairType(Enum):
+    Pair = 2
+    ThreeOfAKind = 3
+    FourOfAKind = 4
+
+
+def _check_pair_hands(hand: list[str]) -> GameResult:
+    rank_frequency_dist = build_rank_frequency_dist(hand)
+
+    if (
+        PairType.ThreeOfAKind.value in rank_frequency_dist
+        and PairType.Pair.value in build_rank_frequency_dist(hand)
+    ):
         return GameResult.FullHouse
-    if 2 in rank_frequency_dist:
-        if rank_frequency_dist[2] == 2:
+    if PairType.Pair.value in rank_frequency_dist:
+        if rank_frequency_dist[PairType.Pair.value] == 2:
             return GameResult.TwoPair
-        if rank_frequency_dist[2] == 1:
+        if rank_frequency_dist[PairType.Pair.value] == 1:
             return GameResult.Pair
-    if 3 in rank_frequency_dist:
+    if PairType.ThreeOfAKind.value in rank_frequency_dist:
         return GameResult.ThreeOfAKind
-    if 4 in rank_frequency_dist:
+    if PairType.FourOfAKind.value in rank_frequency_dist:
         return GameResult.FourOfAKind
 
     return None
