@@ -119,7 +119,7 @@ def score(dealer: list[str], player: list[str]) -> str:
 
 
 def _check_made_hands(hand: list[str]) -> GameResult:
-    if is_flush(hand) and is_high_cards(hand):
+    if is_flush(hand) and _all_high_cards(hand):
         return GameResult.RoyalFlush
     if is_flush(hand) and is_straight(hand):
         return GameResult.StraightFlush
@@ -131,7 +131,7 @@ def _check_made_hands(hand: list[str]) -> GameResult:
     return None
 
 
-def is_high_cards(hand: list[str]) -> bool:
+def _all_high_cards(hand: list[str]) -> bool:
     return all([c[0] in HIGH_CARD_RANKS for c in hand])
 
 
