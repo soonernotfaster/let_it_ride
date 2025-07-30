@@ -1,6 +1,6 @@
 # Let it Ride
 
-Analyze the probabilites of the poker variant called [Let it Ride](https://casinos.ballys.com/atlantic-city/files/6406/BLYS_AC-LetitRide-GamingGuide-4x9-v4.pdf).
+Code to analyze the probabilites of the poker variant called [Let it Ride](https://casinos.ballys.com/atlantic-city/files/6406/BLYS_AC-LetitRide-GamingGuide-4x9-v4.pdf).
 
 
 In 100 thousand games, I observed:
